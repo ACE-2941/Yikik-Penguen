@@ -19,6 +19,17 @@ body {
     text-shadow: 3px 3px 0px #000;
     z-index: 10;
 }
+#scoreBoard {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    color: #fff;
+    font-family: 'Arial Black', sans-serif;
+    font-size: 32px;
+    text-shadow: 3px 3px 0px #000; /* Yazının arkasına gölge ekler, daha belirgin olur */
+    z-index: 10;
+    pointer-events: none; /* Üzerine tıklanmasını engeller */
+}
 canvas {
     background: #87ceeb;
     height: 100vh;
