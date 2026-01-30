@@ -1,11 +1,10 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
-const scoreBoard = document.getElementById("scoreBoard");
 
 canvas.width = 360;
 canvas.height = 640;
 
-let score = 0;
+let puan = 0;
 let gameActive = true;
 const penguinImg = new Image();
 penguinImg.src = "assets/penguin.png";
@@ -15,7 +14,7 @@ const penguin = {
     y: 540,
     w: 64, h: 64, 
     frameX: 0, 
-    frameY: 0, // 0:Yürüme, 2:Zıplama
+    frameY: 0, 
     maxFrames: 5, 
     fps: 0,
     stagger: 8,
@@ -57,12 +56,10 @@ function jump() {
 function update() {
     if (!gameActive) return;
 
-    // Hareket ve Yerçekimi
     penguin.x += moveDir * 8;
     penguin.y += penguin.velocityY;
     penguin.velocityY += penguin.gravity;
 
-    // Zemin Kontrolü
     if (penguin.y > 540) {
         penguin.y = 540;
         penguin.isJumping = false;
@@ -71,12 +68,10 @@ function update() {
         penguin.maxFrames = 5;
     }
 
-    // Ekran Sınırı
     if (penguin.x < 0) penguin.x = 0;
     if (penguin.x > canvas.width - penguin.w) penguin.x = canvas.width - penguin.w;
 
-    // Engelleri Üretme
-    if (++timer > 50) {
+    if (++timer > 55) {
         obstacles.push({ 
             x: Math.random() * (canvas.width - 40), 
             y: -40, 
@@ -85,27 +80,24 @@ function update() {
         timer = 0;
     }
 
-    // Engelleri Güncelleme ve Çarpışma
     obstacles.forEach((o, i) => {
-        o.y += 6 + (score / 15); 
+        o.y += 6 + (puan / 20); 
 
-        // Puan Artışı (Engel aşağıdan çıkınca)
+        // Engel geçilince Puan Artışı
         if (o.y > canvas.height) {
             obstacles.splice(i, 1);
-            score++;
-            scoreBoard.innerText = "SKOR: " + score;
+            puan++;
         }
         
-        // Çarpışma Kontrolü
+        // Çarpışma
         if (penguin.x + 15 < o.x + o.s && penguin.x + 45 > o.x && 
             penguin.y + 10 < o.y + o.s && penguin.y + 55 > o.y) {
             gameActive = false;
-            alert("OYUN BİTTİ! TOPLAM SKORUN: " + score);
+            alert("OYUN BİTTİ! PUANIN: " + puan);
             location.reload();
         }
     });
 
-    // Animasyon hızı
     penguin.fps++;
     if (penguin.fps % penguin.stagger === 0) {
         penguin.frameX = (penguin.frameX + 1) % penguin.maxFrames;
@@ -115,6 +107,7 @@ function update() {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    // Penguen Çizimi
     if (penguinImg.complete) {
         ctx.drawImage(
             penguinImg,
@@ -132,6 +125,14 @@ function draw() {
         ctx.strokeStyle = "white";
         ctx.strokeRect(o.x, o.y, o.s, o.s);
     });
+
+    // PUAN TABLOSU (Mavi ekranın sol üstüne çizer)
+    ctx.fillStyle = "white";
+    ctx.font = "bold 24px Arial";
+    ctx.shadowColor = "black";
+    ctx.shadowBlur = 4;
+    ctx.fillText("PUAN: " + puan, 20, 40);
+    ctx.shadowBlur = 0; // Diğer çizimleri etkilemesin
 }
 
 function gameLoop() {
