@@ -114,7 +114,33 @@ function draw() {
             64, 64 // Ekranda çizim boyutu
         );
     }
+let score = 0;
+const scoreBoard = document.getElementById("scoreBoard");
 
+function update() {
+    if (!gameActive) return;
+
+    // ... (Penguen hareket kodları)
+
+    // Engelleri Güncelleme ve Puan Artışı
+    obstacles.forEach((o, i) => {
+        o.y += 6 + (score / 15); // Oyun zorlaştıkça hız biraz artar
+
+        // ENGEL GEÇİLDİ Mİ?
+        if (o.y > canvas.height) {
+            obstacles.splice(i, 1); // Engeli listeden sil
+            score++; // PUANI ARTIR
+            scoreBoard.innerText = "SKOR: " + score; // EKRANA YAZ
+        }
+
+        // Çarpışma Kontrolü
+        if (penguin.x + 20 < o.x + o.s && penguin.x + 44 > o.x && 
+            penguin.y + 20 < o.y + o.s && penguin.y + 60 > o.y) {
+            gameActive = false;
+            alert("OYUN BİTTİ! TOPLAM SKORUN: " + score);
+            location.reload();
+        }
+    });
     // Engeller (Koyu Kırmızı)
     ctx.fillStyle = "#800000";
     obstacles.forEach(o => {
